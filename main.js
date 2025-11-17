@@ -1,28 +1,84 @@
-function gameBoard(rows, columns){
- const totalSize = rows * columns
- const Gameboard = {
-  board: [],  
+const gameBoardDisplay = (function(rows, columns){
+const GameBoard = {
+  gameboard : [],
+  rows,
+  columns,
   setGameLayout(){
-    for (let i = 0; i < totalSize; i++) {
-      this.board.push(totalSize);
+    for (let i = 0; i < this.rows; i++) {
+      let rowArray = [];
+      for(let j = 0; j < this.columns; j++){
+      rowArray.push(null);
+      }
+      this.gameboard.push(rowArray)
     }
-  }
-};
-return Gameboard;
+  },
+placeChoice(rows, columns, mark){
+if(this.gameboard[rows][columns] === null){
+  this.gameboard[rows][columns] = mark;
+  return true;
 }
-const getGameBoard = gameBoard(3, 3)
+return false;
+},
+getBoard() {
+      return this.gameboard;
+    }
+}
+GameBoard.setGameLayout();
+return GameBoard;
+})
+const getGameBoard = gameBoardDisplay(3, 3)
 console.log(getGameBoard)
 
+function createPlayers(name, playerChoice){
+ return {
+  name,
+  playerChoice
+ }
+}
 
-function game(){}
+const playGame = (function(){
+const playerX = createPlayers("PlayerOne", "X")
+const playerO = createPlayers("PlayerTwo", "O")
+const board = getGameBoard;
+let currentPlayer = playerX;
 
-function players(playerOne, playerTwo){
-  return{
-    players :[
-      {name: playerOne, initialPick: "X"},
-      {name: playerTwo, initialPick: "O"}
-    ]
+const switchPlayer = () => {
+    currentPlayer = currentPlayer === playerX ? playerO : playerX;
+  }
+
+const makeMove = (rows, columns) => {
+
+const placeMark = board.placeChoice(rows, columns, currentPlayer.playerChoice )
+if(placeMark){
+   console.log(`${currentPlayer.name} placed ${currentPlayer.playerChoice} at [${rows}, ${columns}]`);
+      console.log(board.getBoard());
+      switchPlayer();
+      return true;
+    } else {
+      console.log("Cell already occupied!");
+      return false;
+    }
+}
+const roundWin = () => {
+  
+}
+return {
+    makeMove,
+    getCurrentPlayer: () => currentPlayer,
+    getBoard: () => board.getBoard()
   }
 }
-let gamePlayers = players("PlayerOne", "playerTwo")
+)()
 
+playGame.makeMove(0,0)
+playGame.makeMove(0,1)
+playGame.makeMove(0,2)
+
+playGame.makeMove(1,0)
+playGame.makeMove(1,1)
+playGame.makeMove(1,2)
+
+
+playGame.makeMove(2,0)
+playGame.makeMove(2,1)
+playGame.makeMove(2,2)
