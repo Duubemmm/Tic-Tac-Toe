@@ -3,9 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Tic-Tac-Toe</title>
+    <link rel="stylesheet" href="./styles.css"/>
 </head>
 <body>
+    <div class="game-div">
+        <h1 class="title">Tic-Tac-Toe</h1>
+        <p>Ready for a quick game?</p>
+        <div>
+            How To Play
+        <ul>
+            <li>Place your mark</li>
+            <li>Align your mark </li>
+            <li>If your mark aligns diagonally, horizontally, vertically</li>
+            <li>You win!</li>
+        </ul>
+        </div>
+        <button class="start-game">Start Game</button>
+    </div>
+    <div class="play-div">
+    <div class="scoreboard">
+            <div class="player-score player-one">
+                <span class="player-label">Player 1 (X)</span>
+                <span class="score-value">0</span>
+            </div>
+
+            <div class="player-score player-two">
+                <span class="player-label">Player 2 (O)</span>
+                <span class="score-value">0</span>
+            </div>
+        </div>
+        <hr>
+        <div id="game-board">
+        </div>
+        </div>
     <script src="main.js"></script>
 </body>
 </html>
