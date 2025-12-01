@@ -98,37 +98,45 @@ const playGame = (function () {
   };
   const makeMove = (rows, columns) => {
     if (gameOver) {
-      console.log("Game is over! Reset to play again.");
-      return false;
+      return { success: false, message: "Game is over! Reset to play again." };
     }
-    const placeMark = board.placeChoice(
-      rows,
-      columns,
-      currentPlayer.playerChoice,
-    );
+
+    const placeMark = board.placeChoice(rows, columns, currentPlayer.playerChoice);
+    
     if (placeMark) {
-      console.log(
-        `${currentPlayer.name} placed ${currentPlayer.playerChoice} at [${rows}, ${columns}]`,
-      );
-      board.displayBoard();
       const result = checkWinner();
+      const moveData = {
+        success: true,
+        player: currentPlayer.name,
+        mark: currentPlayer.playerChoice,
+        position: [rows, columns],
+        board: board.getBoard(),
+        gameOver: false,
+        winner: null,
+        message: `${currentPlayer.name}'s turn`
+      };
+
       if (result) {
         gameOver = true;
+        moveData.gameOver = true;
         if (result === "tie") {
-          console.log("It's a tie! Game Over!");
+          moveData.message = "It's a tie! Game Over!";
+          moveData.winner = "tie";
         } else {
-          console.log(`${currentPlayer.name} wins with ${result}! 🎉`);
+          moveData.message = `${currentPlayer.name} wins!`;
+          moveData.winner = currentPlayer.name;
         }
       } else {
         switchPlayer();
-        console.log(`${currentPlayer.name}'s turn`);
+        moveData.message = `${currentPlayer.name}'s turn`;
       }
-      return true;
+
+      return moveData;
     } else {
-      console.log("Cell already occupied!");
-      return false;
+      return { success: false, message: "Cell already occupied!" };
     }
   };
+
   const resetGame = () => {
     board.gameboard = [
       [null, null, null],
@@ -137,38 +145,104 @@ const playGame = (function () {
     ];
     currentPlayer = playerX;
     gameOver = false;
-    console.log("Game reset! PlayerOne's turn.");
+    return { success: true, message: "Game reset! PlayerOne's turn." };
   };
 
   return {
     makeMove,
     getCurrentPlayer: () => currentPlayer,
-    getBoard: () => board.displayBoard(),
+    getBoard: () => board.getBoard(),
     checkWinner,
     resetGame,
+    isGameOver: () => gameOver
   };
 })();
 
-playGame.makeMove(0, 0);
-playGame.makeMove(0, 1);
-playGame.makeMove(0, 2);
-
-playGame.makeMove(1, 0);
-playGame.makeMove(1, 1);
-playGame.makeMove(1, 2);
-
-playGame.makeMove(2, 0);
-playGame.makeMove(2, 1);
-playGame.makeMove(2, 2);
-
-const displayUI = function () {
-  const startGameBtn = document.querySelector(".start-game")
-  const playGameDiv = document.querySelector(".play-div")
-  startGameBtn.addEventListener("click", startGame)
+const displayUI = (function () {
+  const game = playGame;
   
-   const game = playGame()
-   function startGame() {
-    playGameDiv.style.display = "block"
-    game()
-   }
-};
+  const startGameBtn = document.querySelector(".start-game");
+  const gameDiv = document.querySelector(".game-div");
+  const playGameDiv = document.querySelector(".play-div");
+  const gameBoard = document.querySelector("#game-board");
+  const resetBtn = document.querySelector(".reset-game");
+
+  function createBoard() {
+    gameBoard.innerHTML = "";
+    const board = game.getBoard();
+    
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        const cell = document.createElement("div");
+        cell.classList.add("cell");
+        cell.dataset.row = i;
+        cell.dataset.col = j;
+        cell.textContent = board[i][j] || "";
+        
+        cell.addEventListener("click", handleCellClick);
+        
+        gameBoard.appendChild(cell);
+      }
+    }
+  }
+
+  // Handle cell clicks
+  function handleCellClick(e) {
+    const row = parseInt(e.target.dataset.row);
+    const col = parseInt(e.target.dataset.col);
+    
+    const result = game.makeMove(row, col);
+    
+    if (result.success) {
+      updateBoard();
+      
+      if (result.gameOver) {
+        alert(result.message);
+        disableBoard();
+      }
+    }
+  }
+
+  function updateBoard() {
+    const board = game.getBoard();
+    const cells = document.querySelectorAll(".cell");
+    
+    cells.forEach(cell => {
+      const row = parseInt(cell.dataset.row);
+      const col = parseInt(cell.dataset.col);
+      cell.textContent = board[row][col] || "";
+    });
+  }
+
+  // Disable board after game ends
+  function disableBoard() {
+    const cells = document.querySelectorAll(".cell");
+    cells.forEach(cell => {
+      cell.style.pointerEvents = "none";
+    });
+  }
+
+  function enableBoard() {
+    const cells = document.querySelectorAll(".cell");
+    cells.forEach(cell => {
+      cell.style.pointerEvents = "auto";
+    });
+  }
+
+  function startGame() {
+    gameDiv.style.display = "none";  
+    playGameDiv.style.display = "block";  
+    resetBtn.style.display = "block"; 
+    createBoard();
+  }
+
+
+  function resetGame() {
+    const result = game.resetGame();
+    createBoard();
+    enableBoard();
+  }
+
+  startGameBtn.addEventListener("click", startGame);
+  resetBtn.addEventListener("click", resetGame);
+})();

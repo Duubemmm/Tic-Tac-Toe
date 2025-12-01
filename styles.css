@@ -23,9 +23,37 @@ body {
     width: 100%;
 }
 
-.play-div{
-    display: none;
-    
+.play-div {
+    display: none; 
+    background-color: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 100%;
+}
+
+.reset-game {
+    display: none; 
+    width: 100%;
+    max-width: 500px;
+    padding: 15px;
+    margin-top: 20px;
+    background: linear-gradient(135deg, #d2691e 0%, #8b4513 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(210, 105, 30, 0.3);
+}
+
+.reset-game:hover {
+    background: linear-gradient(135deg, #8b4513 0%, #654321 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 7px 20px rgba(210, 105, 30, 0.5);
 }
 
 .title {
